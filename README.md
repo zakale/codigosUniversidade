@@ -1,6 +1,6 @@
 # códigos utilizados na universidade católica de Brasília.  :school:
 
-* ### estrutura de dados :computer:
+* ### Estrutura de Dados :computer:
 
 * ### Banco de Dados :notebook:
 
