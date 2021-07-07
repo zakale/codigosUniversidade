@@ -17,6 +17,7 @@ struct tNo {
 };
 int menu(void);
 void incluir(struct tNo **, struct tNo *);
+void listar (struct tNo *);
 
 
 int main (void){
@@ -42,7 +43,8 @@ int main (void){
 		    //	scanf("%d", &dado.codigo:);
 			break;
 				case 3:
-		    	printf("\t\t**Listagem**");	
+		    	printf("\t\t*** Listagem ***\n\n");
+		    	listar(lista);
 			break;
 				case 4:
 		    	printf("\t\t**Alteracao**");	
@@ -69,11 +71,41 @@ int menu(void){
 	scanf("%d", &op);
 	return op;
 }
-void incluir(struct tNo **lst, struct tNo *novo){
-	if((*lst) == NULL) {
+void incluir(struct tNo **lst, struct tNo *novo) {
+	struct tNo *p = (*lst), *q;
+	if ((*lst) == NULL) { // Lista vazia
 		novo->prox = NULL;
 		(*lst) = novo;
 	}
-	else {
+	else { // inicio, fim ou meio
+		if (novo->dado.codigo < (*lst)->dado.codigo) { // inicio
+			novo->prox = (*lst);
+			(*lst) = novo;
+		}
+		else { // fim ou meio
+			while (p->prox != NULL)
+				p = p->prox;
+			if (novo->dado.codigo > p->dado.codigo) { // fim
+				p->prox = novo;
+				novo->prox = NULL;
+			}
+			else { // meio
+				p = (*lst);
+				while (p->dado.codigo < novo->dado.codigo) {
+					q = p;
+					p = p->prox;
+				}
+				q->prox = novo;
+				novo->prox = p;
+			}
+		}
+	}
+}
+
+void listar (struct tNo *lst){
+	struct tNo *p = lst;
+	while (p != NULL) {
+		printf("%d - %s\n", p->dado.codigo, p->dado.descricao);
+		p = p->prox;
 	}
 }
