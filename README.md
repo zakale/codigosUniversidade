@@ -2,7 +2,7 @@
 
 * ### Estrutura de Dados :computer:
 
-* ### Banco de Dados :notebook:
+* ### Banco de Dados :leaf:
 
 * ### Programação Orientada a Objetos :book:
 
