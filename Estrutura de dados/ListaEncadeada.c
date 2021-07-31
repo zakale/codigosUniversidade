@@ -17,18 +17,25 @@ struct tNo {
 	struct tNo *prox;
 };
 
+struct tDescritor {
+	struct tNo *ini;
+	int qtd;
+	struct tNo *fim;
+};
+
 //*** Prototipos de funcoes ****************************************************
 int menu(void);
-void inicializar(struct tNo **);
-void incluir(struct tNo **, struct tNo *);
-void excluir(struct tNo **, struct tNo *);
-struct tNo *consultar(struct tNo *, int);
-void listar(struct tNo *);
-void destruir(struct tNo **);
+void inicializar(struct tDescritor*);
+void incluir(struct tDescritor*, struct tNo *);
+void excluir(struct tDescritor*, struct tNo *);
+struct tNo *consultar(struct tDescritor, int);
+void listar(struct tDescritor);
+void destruir(struct tDescritor*);
 
 //*** Bloco Principal **********************************************************
 int main(void) {
-	struct tNo *lista, *p;
+	struct tDescritor lista;
+	struct tNo *p;
 	int opcao, codigo;
 	
 	inicializar(&lista);
@@ -105,45 +112,65 @@ int menu(void) {
 }
 
 //*** Inicializar **************************************************************
-void inicializar(struct tNo **lst) {
-	(*lst) = NULL;
+void inicializar(struct tDescritor *desc) {
+	(*desc).ini = NULL;
+	(*desc).qtd = 0;
+	(*desc).fim = NULL;
 }
 
 //*** Incluir ******************************************************************
-void incluir(struct tNo **lst, struct tNo *novo) {
-	struct tNo *p = (*lst), *q;
-	if (((*lst) == NULL) || (novo->dado.codigo < (*lst)->dado.codigo)) { // Lista vazia OU inicio
-		novo->prox = (*lst);
-		(*lst) = novo;
+void incluir(struct tDescritor *desc, struct tNo *novo) {
+	struct tNo *p = (*desc).ini, *q;
+	if (((*desc).ini == NULL) || (novo->dado.codigo < (*desc).ini->dado.codigo)) { // Lista vazia OU inicio
+		if ((*desc).ini == NULL) // lista vazia
+			(*desc).fim = novo;
+		novo->prox = (*desc).ini;
+		(*desc).ini = novo;
 	}
 	else { // fim ou meio
-		while ((p != NULL) && (p->dado.codigo < novo->dado.codigo)) {
-			q = p;
-			p = p->prox;
+		if (novo->dado.codigo > (*desc).fim->dado.codigo) { // fim
+			(*desc).fim->prox = novo;
+			novo->prox = NULL;
+			(*desc).fim = novo;
 		}
-		q->prox = novo;
-		novo->prox = p;
+		else { // meio
+			while (p->dado.codigo < novo->dado.codigo) {
+				q = p;
+				p = p->prox;
+			}
+			q->prox = novo;
+			novo->prox = p;
+		}
 	}
+	(*desc).qtd++;
 }
 
 //*** Excluir ******************************************************************
-void excluir(struct tNo **lst, struct tNo *vitima) {
-	struct tNo *p = (*lst), *q;
-	if ((*lst) == vitima) // Unico OU Inicio
-		(*lst) = vitima->prox;
-	else { // fim e meio
-		while (p != vitima) {
-			q = p;
-			p = p->prox;
+void excluir(struct tDescritor *desc, struct tNo *vitima) {
+	struct tNo *p = (*desc).ini, *q;
+	
+	if ((*desc).qtd == 0) // unico
+		(*desc).ini = (*desc).fim = NULL;
+	else { // Inicio ou fim ou meio
+		if ((*desc).ini == vitima) // Inicio
+			(*desc).ini = vitima->prox;
+		else { // fim e meio
+			while (p != vitima) {
+				q = p;
+				p = p->prox;
+			}
+			q->prox = vitima->prox;
+			if (vitima->prox == NULL)
+				(*desc).fim = q;
 		}
-		q->prox = vitima->prox;
 	}
 	free(vitima);
+	(*desc).qtd--;
 }
 
 //*** Consultar ****************************************************************
-struct tNo *consultar(struct tNo *lst, int codigo) {
-	struct tNo *p = lst;
+struct tNo *consultar(struct tDescritor desc, int codigo) {
+	struct tNo *p = desc.ini;
 	while (p != NULL) {
 		if (p->dado.codigo == codigo)
 			return p;
@@ -153,8 +180,9 @@ struct tNo *consultar(struct tNo *lst, int codigo) {
 }
 
 //*** Listar *******************************************************************
-void listar(struct tNo *lst) {
-	struct tNo *p = lst;
+void listar(struct tDescritor desc) {
+	struct tNo *p = desc.ini;
+	printf("Total %d\n", desc.qtd);
 	while (p != NULL) {
 		printf("%d - %s\n", p->dado.codigo, p->dado.descricao);
 		p = p->prox;
@@ -162,14 +190,14 @@ void listar(struct tNo *lst) {
 }
 
 //*** Destruir *****************************************************************
-void destruir(struct tNo **lst) {
-	struct tNo *p = (*lst), *q;	
+void destruir(struct tDescritor *desc) {
+	struct tNo *p = (*desc).ini, *q;	
 	while (p != NULL) {
 		q = p;
 		p = p->prox;
 		free(q);
 	}
-	inicializar(lst);
+	inicializar(desc);
 }
 
 //*** FIM **********************************************************************
