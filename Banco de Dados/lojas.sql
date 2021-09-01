@@ -1,5 +1,5 @@
-DROP DATABASE IF EXISTS vendas;
-CREATE DATABASE IF NOT EXISTS vendas;
+DROP DATABASE IF EXISTS lojas;
+CREATE DATABASE IF NOT EXISTS lojas;
 # id_cliente, nome, endereco, cidade, cep, uf, cnpj, ie
 
 CREATE TABLE clientes (
